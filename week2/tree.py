@@ -1,5 +1,6 @@
 from fractions import Fraction
 
+
 class Node:
     def __init__(self, value):
         self.left = None
@@ -63,11 +64,18 @@ class Tree:
             return node
         raise StopIteration
 
-    def search(self, value):
-        for n in self:
-            if n.value == value:
-                return n
+    def __search(self, root, value):
+        if root:
+            if root.value > value:
+                return self.__search(root.left, value)
+            elif root.value < value:
+                return self.__search(root.right, value)
+            elif root.value == value:
+                return root
         raise KeyError
+
+    def search(self, value):
+        return self.__search(self.__root, value)
 
 
 def main():

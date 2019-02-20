@@ -18,10 +18,10 @@ class Fraction:
         return self.nominator / self.denominator <= other.nominator / other.denominator
 
     def __gt__(self, other):
-        return self.nominator / self.denominator > other.nominator / other.denominator
+        return other < self
 
     def __ge__(self, other):
-        return self.nominator / self.denominator >= other.nominator / other.denominator
+        return other <= self
 
     def __str__(self):
         return f'Fraction ({self.nominator}, {self.denominator})'
