@@ -20,6 +20,10 @@ class TestTree(unittest.TestCase):
     def test_search(self):
         self.assertEqual(self.t.search('C'), self.t._Tree__root.left.right.left)
 
+    def test_key_error(self):
+        with self.assertRaises(KeyError):
+            self.t.search('Z')
+
     def test_preorder(self):
         nodes = [i.value for i in iter(self.t)]
         self.assertEqual(nodes, ['F', 'B', 'A', 'D', 'C', 'E', 'G', 'I', 'H'])
