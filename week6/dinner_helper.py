@@ -1,39 +1,55 @@
+import random
+
 from multiprocessing import Process
-from abc import abstractmethod
+from time import sleep
 
 
 class Philosopher(Process):
-    def __init__(self, id, stop_event, left_fork, right_fork, eat_time, think_time,*args,**kwargs):
+
+    def __init__(self, id, left_fork_event, right_fork_event):
         super(Philosopher, self).__init__()
-        self.left_fork = left_fork
-        self.right_fork = right_fork
-        self.eat_time = eat_time
-        self.think_time = think_time
-
-        # info 
         self.id = id  # int
-        self.dinner_end = stop_event # multiprocessing.Event
-
-    @abstractmethod
-    def dining(self):
-        pass
+        left_fork_event.set()
+        right_fork_event.set()
+        self.left_fork = (Fork(self.id % 5), left_fork_event)
+        self.right_fork = (Fork((self.id + 1) % 5), right_fork_event)
+        self.eat_time = random.randint(0, 5)
+        self.think_time = random.randint(0, 5)
 
     def think(self):
-        pass
+        print(f'Philosophy {self.id} is thinking')
+        sleep(self.think_time)
 
     def eat(self):
-        pass
+        print(f'Philosophy {self.id} is eating')
+        sleep(self.eat_time)
+
+    def take(self, fork, timeout=None):
+        print(f'{self} take {fork[0]}')
+        fork[1].clear()
+
+    def put(self, fork):
+        print(f'{self} put {fork[0]}')
+        fork[1].set()
+
+    def run(self):
+        while True:
+            self.think()
+            self.left_fork[1].wait()
+            self.take(self.left_fork)
+            self.right_fork[1].wait()
+            self.take(self.right_fork)
+            self.eat()
+            self.put(self.left_fork)
+            self.put(self.right_fork)
+
+    def __str__(self):
+        return f'Philosophy {self.id}'
 
 
-class Fork(object):
-    def __init__(self,id,*args,**kwargs): 
-        self.id = id # int
+class Fork:
+    def __init__(self, id):
+        self.id = id  # int
 
-    def take(self, timeout=None):
-        """
-        :return: True on success, False otherwise
-        """
-        pass
-
-    def release(self, timeout=None):
-        pass
+    def __str__(self):
+        return f'Fork {self.id}'
